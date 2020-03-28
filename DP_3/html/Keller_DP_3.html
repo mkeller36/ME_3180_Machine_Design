@@ -1,0 +1,550 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Keller_DP_3</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-12-03"><meta name="DC.source" content="Keller_DP_3.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Michael James Keller</a></li><li><a href="#2">Varible setup</a></li><li><a href="#3">stepping through 14-19 design layout, page 767</a></li><li><a href="#4">Solving Example</a></li><li><a href="#5">Finding omega for each gear</a></li><li><a href="#6">Finding Torque on each gear</a></li><li><a href="#7">w_t, transmitted tangental load, on each gear - page 697, 13-14</a></li><li><a href="#8">w_r, transmitted radial load, on each gear - page 701, 13-15</a></li><li><a href="#9">Lewis form factors  - 730</a></li><li><a href="#10">K_v for machined gears - 731</a></li><li><a href="#11">Bending stress in tooth</a></li><li><a href="#12">Calculating safety factor, must be more than 1.5</a></li><li><a href="#13">Finding minimum gear face width</a></li><li><a href="#14">Finding Sigma c</a></li><li><a href="#15">Finding wear factor of safety</a></li><li><a href="#16">Finding minimum gear face width wear</a></li><li><a href="#17">Estimating Horse power rating page 732, 14-2</a></li><li><a href="#18">Gears</a></li></ul></div><h2 id="1">Michael James Keller</h2><pre class="codeinput">clc
+clear
+<span class="comment">% &macr;\_(?)_/&macr;</span>
+</pre><h2 id="2">Varible setup</h2><pre class="codeinput"><span class="comment">% shafts</span>
+diameter_motor_shaft = 0.75; <span class="comment">%mm</span>
+diameter_intermediate_shaft = 0.75; <span class="comment">%19.05 mm to 0.75 inches</span>
+diameter_drive_shaft = 1.25; <span class="comment">%31.75 mm to 1.25 inches</span>
+
+
+<span class="comment">% Other</span>
+step = 2;
+</pre><h2 id="3">stepping through 14-19 design layout, page 767</h2><pre class="codeinput"><span class="comment">% function</span>
+    <span class="comment">% Load</span>
+    torque_out = 12*47.13022; <span class="comment">%69.3Nm, convert to inch-lbs</span>
+    <span class="comment">% Speed - RPM</span>
+    rpm_in = 360; <span class="comment">%360 rpm to omega</span>
+    rpm_out = 90; <span class="comment">% 90 rpm to omega</span>
+    <span class="comment">% Reliability</span>
+    safety_factor = 1.5;
+    <span class="comment">% life</span>
+    life_hours = 24*365*5;
+    life_minutes = life_hours*60;
+    <span class="comment">% K_o</span>
+
+<span class="comment">% Unquantifiable risk</span>
+
+<span class="comment">% Tooth System</span>
+    <span class="comment">% Pressure Angle</span>
+        phi = 14.5; <span class="comment">% pressure angle</span>
+    <span class="comment">% Addendum</span>
+        <span class="comment">% a pitch of 4 seems to give standardized numbers for diameter, 8.5</span>
+        <span class="comment">% and 4.25</span>
+        <span class="comment">%pitch = [2 2.25 2.5 3 4 6 8 10 12 16 20 24 32 40 48]; % Set pitch:  p = N/d, 16 is availible at McMaster</span>
+        pitch = 10;
+        addendum = 1./pitch;
+    <span class="comment">% Dedendum</span>
+        deddendum = 1.25./pitch;
+    <span class="comment">% Root fillet radius</span>
+
+<span class="comment">% Gear Ratio</span>
+    <span class="comment">% Gear Ratio</span>
+        <span class="comment">% Page 692, example 13-3</span>
+        gear_ratio = rpm_out/rpm_in;
+        ratio_per_step = gear_ratio^(1/step);
+        fprintf(<span class="string">"Question 1: \n"</span>)
+        fprintf(<span class="string">"Reduction per step = %.2f or 2:1\n"</span>,ratio_per_step)
+    <span class="comment">% N_p_theoretical (number of teeth on pinion)</span>
+        <span class="comment">% Page 678, Equation 13-11</span>
+        m = 1/ratio_per_step; <span class="comment">% gear teeth ration, per step</span>
+        k = .8; <span class="comment">% 1 for full depth teeth, 0.8 for stub teeth</span>
+        <span class="comment">% need to use stub teeth</span>
+        N_p_theory = ceil(((2*k)/((1+2*m)*sind(phi)^2))*(m+sqrt(m^2+(1+2*m)*sin(phi)^2)));
+    <span class="comment">% N_g_theoretical (number of teeth on gear)</span>
+        <span class="comment">% Page 679, Equation 13-12</span>
+        N_g_max = (N_p_theory^2 * sind(phi)^2 - 4*k^2)/(4*k - 2*N_p_theory*sind(phi)^2);
+        <span class="comment">% Find required mating gear for pinion</span>
+        N_g_theory = N_p_theory * (1/ratio_per_step);
+
+<span class="comment">% Choseing gears</span>
+    <span class="comment">%6867K79 for pinion 1 and 3,</span>
+    <span class="comment">%6325K9 for gear 2 and 4</span>
+    gear1.name = <span class="string">'6867K79'</span>;
+    gear1.pitch = 10;
+    gear1.pitch_diameter = 3;
+    gear1.face_width = 1;
+    gear1.teeth = 30;
+
+    gear2.name = <span class="string">'6325K9'</span>;
+    gear2.pitch = 10;
+    gear2.pitch_diameter = 6;
+    gear2.face_width = 1;
+    gear2.teeth = 60;
+        fprintf(<span class="string">"Number of teeth on pinion 1 = %2.0f \n"</span>,gear1.teeth)
+        fprintf(<span class="string">"Number of teeth on pinion 3 = %2.0f \n"</span>,gear1.teeth)
+        fprintf(<span class="string">"Number of teeth on gear 2 = %2.0f \n"</span>,gear2.teeth)
+        fprintf(<span class="string">"Number of teeth on gear 4 = %2.0f \n"</span>,gear2.teeth)
+<span class="comment">% Quality Number</span>
+<span class="comment">% Diametral Pitch</span>
+    diameter_pinion = gear1.pitch_diameter; <span class="comment">%N_p_theory ./ pitch;</span>
+    diameter_gear = gear2.pitch_diameter; <span class="comment">%N_g_theory ./ pitch;</span>
+    <span class="comment">% gears 1 and 3 are pinions, 2 and 4 are gears</span>
+    <span class="comment">%</span>
+    diameter_1 = diameter_pinion;
+    diameter_2 = diameter_gear;
+    diameter_3 = diameter_pinion;
+    diameter_4 = diameter_gear;
+<span class="comment">% Face Width</span>
+    face_width = gear1.face_width; <span class="comment">% from Mcmaster</span>
+<span class="comment">% Pinion Material</span>
+    s_t_steel = 25000; <span class="comment">%psi</span>
+    s_t_brass = 10000; <span class="comment">%psi, page 742, hardness 350</span>
+    s_c_steel = 141000; <span class="comment">%psi, change if you harden it</span>
+    s_c_brass = 40000; <span class="comment">%psi</span>
+<span class="comment">% Gear Material</span>
+</pre><pre class="codeoutput">Question 1: 
+Reduction per step = 0.50 or 2:1
+Number of teeth on pinion 1 = 30 
+Number of teeth on pinion 3 = 30 
+Number of teeth on gear 2 = 60 
+Number of teeth on gear 4 = 60 
+</pre><h2 id="4">Solving Example</h2><p>Pinion Bending</p><pre class="codeinput">    F = 1;<span class="comment">% 4*pi/pitch; % face width theoretical</span>
+</pre><h2 id="5">Finding omega for each gear</h2><pre class="codeinput">rpm_2 = rpm_in*(N_p_theory/N_g_theory);
+rpm_3 = rpm_2; <span class="comment">% on same shaft</span>
+fprintf(<span class="string">"Question 4: \n"</span>)
+fprintf(<span class="string">"Intermediate shaft rotational speed = %3.0f rpm \n"</span>,rpm_2)
+</pre><pre class="codeoutput">Question 4: 
+Intermediate shaft rotational speed = 180 rpm 
+</pre><h2 id="6">Finding Torque on each gear</h2><pre class="codeinput">torque_3 = torque_out*(rpm_out/rpm_3); <span class="comment">%pound feet</span>
+torque_2 = torque_3*(rpm_3/rpm_2);
+torque_in = torque_2*(rpm_2/rpm_in);
+fprintf(<span class="string">"Torque on intermediate shaft = %f inch-Lbs \n"</span>,torque_2)
+</pre><pre class="codeoutput">Torque on intermediate shaft = 282.781320 inch-Lbs 
+</pre><h2 id="7">w_t, transmitted tangental load, on each gear - page 697, 13-14</h2><pre class="codeinput">w_t_1 = 2*torque_in/diameter_1; <span class="comment">%pounds</span>
+w_t_2 = 2*torque_2/diameter_2;
+w_t_3 = 2*torque_3/diameter_3;
+w_t_4 = 2*torque_out/diameter_4;
+fprintf(<span class="string">"Question 5: \n"</span>)
+fprintf(<span class="string">"Transmitted tangental load on drive shaft = %f Lbs \n"</span>,w_t_4)
+</pre><pre class="codeoutput">Question 5: 
+Transmitted tangental load on drive shaft = 188.520880 Lbs 
+</pre><h2 id="8">w_r, transmitted radial load, on each gear - page 701, 13-15</h2><pre class="codeinput">w_r_1 = w_t_1*tand(phi); <span class="comment">%pounds</span>
+w_r_2 = w_t_2*tand(phi);
+w_r_3 = w_t_3*tand(phi);
+w_r_4 = w_t_4*tand(phi);
+<span class="comment">% Use this for bending in shafts</span>
+fprintf(<span class="string">"Transmitted radial load on drive shaft = %f Lbs \n"</span>,w_r_4)
+<span class="comment">% if the actual radial load is less than what we used to calculate shaft</span>
+<span class="comment">% diameter, then we should be good to use a previously designed shaft</span>
+<span class="comment">% diameter</span>
+fprintf(<span class="string">"The forces are just barely greater than what was used for the \ncalculations to design the original shaft but the calculations should still be reran.\nPlugging in the numbers a shaft of 1.25 inches should still work.\n"</span>)
+</pre><pre class="codeoutput">Transmitted radial load on drive shaft = 48.754815 Lbs 
+The forces are just barely greater than what was used for the 
+calculations to design the original shaft but the calculations should still be reran.
+Plugging in the numbers a shaft of 1.25 inches should still work.
+</pre><h2 id="9">Lewis form factors  - 730</h2><pre class="codeinput">Y_1 = 0.318; <span class="comment">% N = 30, used chart 14-2 on page 730</span>
+Y_2 = 0.355; <span class="comment">% N = 60,</span>
+Y_3 = 0.318; <span class="comment">% N = 30,</span>
+Y_4 = 0.355; <span class="comment">% N = 60,</span>
+</pre><h2 id="10">K_v for machined gears - 731</h2><pre class="codeinput">v_1 = (diameter_1/12)*pi*rpm_in;
+K_v_1 = (1200+v_1)/1200;
+
+v_2 = (diameter_2/12)*pi*rpm_2;
+K_v_2 = (1200+v_2)/1200;
+
+v_3 = (diameter_3/12)*pi*rpm_3;
+K_v_3 = (1200+v_3)/1200;
+
+v_4 = (diameter_4/12)*pi*rpm_out;
+K_v_4 = (1200+v_4)/1200;
+</pre><h2 id="11">Bending stress in tooth</h2><p>from figure 14-6, page 745</p><pre class="codeinput">J_1 = 0.385;
+J_2 = 0.425;
+J_3 = 0.385;
+J_4 = 0.425;
+<span class="comment">% from page 752</span>
+c_mc = 1; <span class="comment">%uncrowned</span>
+c_pf_1 = 0.025;
+c_pf_2 = 0.025;
+c_pm = 1.1;
+c_ma = 0.127 + 0.0158*F;
+c_e = 1;
+k_m_1 = 1+c_mc*(c_pf_1*c_pm + c_ma*c_e);
+k_m_2 = 1+c_mc*(c_pf_2*c_pm + c_ma*c_e);
+k_b = 1;
+k_o = 1.25;
+k_s = 1;
+sigma_1 = K_v_1*w_t_1*k_s*k_o*((pitch/F)*k_m_1*k_b/J_1);
+sigma_2 = K_v_2*w_t_2*k_s*k_o*((pitch/F)*k_m_2*k_b/J_2);
+sigma_3 = K_v_3*w_t_3*k_s*k_o*(pitch*k_m_1*k_b/(J_3*F));
+sigma_4 = K_v_4*w_t_4*k_s*k_o*(pitch*k_m_2*k_b/(J_4*F));
+<span class="comment">% compare these to s_t, yeild in tention</span>
+</pre><h2 id="12">Calculating safety factor, must be more than 1.5</h2><pre class="codeinput">load_cycles = rpm_out*life_minutes;
+y_n = .9;
+k_t = 1;
+k_r = 1.25;
+safety_factor_theoretical = (s_t_steel * y_n/(k_t*k_r))/sigma_4 ;
+<span class="comment">% if this is greater than 1.5 we are good.</span>
+<span class="keyword">if</span> (safety_factor_theoretical &gt; 1.5)
+    fprintf(<span class="string">"Passes bending \n"</span>)
+<span class="keyword">else</span>
+    fprintf(<span class="string">"Fails bending \n"</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Passes bending 
+</pre><h2 id="13">Finding minimum gear face width</h2><pre class="codeinput">sigma_theoretical = (s_t_steel*y_n/(k_t*k_r))/safety_factor;
+f_min_pinion = w_t_3*k_o*K_v_4*k_s*(pitch/sigma_theoretical)*((k_m_1*k_b)/J_3);
+f_min_gear = w_t_4*k_o*K_v_4*k_s*(pitch/sigma_theoretical)*((k_m_2*k_b)/J_4);
+fprintf(<span class="string">"Question 6: \n"</span>)
+fprintf(<span class="string">"Bending Stress: %f \n"</span>,sigma_4)
+fprintf(<span class="string">"Material Properties: \n"</span>)
+fprintf(<span class="string">"sigma_theoretical: %f \n"</span>,sigma_theoretical)
+fprintf(<span class="string">"S_c steel: %f \n"</span>,s_t_steel)
+fprintf(<span class="string">"Smallest face for gear 3 = %f \n"</span>,f_min_pinion)
+fprintf(<span class="string">"Smallest face for gear 4 = %f \n"</span>,f_min_gear)
+</pre><pre class="codeoutput">Question 6: 
+Bending Stress: 7253.466838 
+Material Properties: 
+sigma_theoretical: 12000.000000 
+S_c steel: 25000.000000 
+Smallest face for gear 3 = 0.667256 
+Smallest face for gear 4 = 0.604456 
+</pre><h2 id="14">Finding Sigma c</h2><pre class="codeinput">c_f = 1;
+I = (cosd(phi)*sind(phi)/2)*(ratio_per_step)/(ratio_per_step+1);
+<span class="comment">%cp find on page 736 and 749</span>
+c_p = ((pi*(((1-.3^2)/(28*10^6))+((1-.3^2)/(28*10^6)))))^(-1/2);
+sigma_c_1 = c_p*(w_t_1*k_o*K_v_1*k_s*k_m_1*c_f/(diameter_1*F*I))^(1/2);
+sigma_c_2 = c_p*(w_t_1*k_o*K_v_1*k_s*k_m_1*c_f/(diameter_2*F*I))^(1/2);
+sigma_c_3 = c_p*(w_t_3*k_o*K_v_3*k_s*k_m_1*c_f/(diameter_3*F*I))^(1/2);
+sigma_c_4 = c_p*(w_t_4*k_o*K_v_4*k_s*k_m_2*c_f/(diameter_4*F*I))^(1/2);
+
+fprintf(<span class="string">"Contact Stress: %f \n"</span>,sigma_c_4)
+</pre><pre class="codeoutput">Contact Stress: 78915.997167 
+</pre><h2 id="15">Finding wear factor of safety</h2><pre class="codeinput">z_n = 0.9; <span class="comment">% page 755</span>
+c_h = 1; <span class="comment">%page 753, same material, same hardness</span>
+s_h = (s_c_steel*z_n*c_h/(k_t*k_r))/(sigma_c_3); <span class="comment">% use 3 because it is biger</span>
+<span class="comment">% if greater than 1.5 we are good</span>
+<span class="keyword">if</span> (s_h &gt; 1.5)
+    fprintf(<span class="string">"Passes wear \n"</span>)
+<span class="keyword">else</span>
+    fprintf(<span class="string">"Fails wear \n"</span>)
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Fails wear 
+</pre><h2 id="16">Finding minimum gear face width wear</h2><pre class="codeinput">sigma_c_theoretical = s_c_steel*z_n*c_h/(k_t*k_r)/sqrt(safety_factor);
+f_pinion_theoretical = c_p^2*(w_t_3*k_o*K_v_3*k_s*k_m_1*c_f/(diameter_3*sigma_c_theoretical^2*I));
+f_gear_theoretical = c_p^2*(w_t_4*k_o*K_v_4*k_s*k_m_2*c_f/(diameter_4*sigma_c_theoretical^2*I));
+fprintf(<span class="string">"Smallest face for gear 3 = %f \n"</span>,f_pinion_theoretical)
+fprintf(<span class="string">"Smallest face for gear 4 = %f \n"</span>,f_gear_theoretical)
+</pre><pre class="codeoutput">Smallest face for gear 3 = 1.812793 
+Smallest face for gear 4 = 0.906396 
+</pre><h2 id="17">Estimating Horse power rating page 732, 14-2</h2><h2 id="18">Gears</h2><p>Helpful example at 760, 14-4 and till 14-8 14-19 goes over how to design a gear set</p><pre class="codeinput">fprintf(<span class="string">"Question 7: \n"</span>)
+fprintf(<span class="string">"Pinion number %s \n"</span>,gear1.name)
+fprintf(<span class="string">"Gear number %s \n"</span>,gear2.name)
+fprintf(<span class="string">"Question 8: \n"</span>)
+fprintf(<span class="string">"The gears would need to be hardened to a brinell hardness of about 400 to work for my calculations.\n"</span>)
+</pre><pre class="codeoutput">Question 7: 
+Pinion number 6867K79 
+Gear number 6325K9 
+Question 8: 
+The gears would need to be hardened to a brinell hardness of about 400 to work for my calculations.
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Michael James Keller
+clc
+clear
+% ¯\_(?)_/¯
+%% Varible setup 
+
+% shafts
+diameter_motor_shaft = 0.75; %mm
+diameter_intermediate_shaft = 0.75; %19.05 mm to 0.75 inches  
+diameter_drive_shaft = 1.25; %31.75 mm to 1.25 inches
+
+
+% Other
+step = 2;
+
+%% stepping through 14-19 design layout, page 767
+
+% function
+    % Load 
+    torque_out = 12*47.13022; %69.3Nm, convert to inch-lbs
+    % Speed - RPM 
+    rpm_in = 360; %360 rpm to omega
+    rpm_out = 90; % 90 rpm to omega
+    % Reliability 
+    safety_factor = 1.5;
+    % life 
+    life_hours = 24*365*5;
+    life_minutes = life_hours*60;
+    % K_o
+    
+% Unquantifiable risk 
+
+% Tooth System 
+    % Pressure Angle 
+        phi = 14.5; % pressure angle
+    % Addendum 
+        % a pitch of 4 seems to give standardized numbers for diameter, 8.5
+        % and 4.25 
+        %pitch = [2 2.25 2.5 3 4 6 8 10 12 16 20 24 32 40 48]; % Set pitch:  p = N/d, 16 is availible at McMaster
+        pitch = 10;
+        addendum = 1./pitch;
+    % Dedendum 
+        deddendum = 1.25./pitch;
+    % Root fillet radius 
+
+% Gear Ratio
+    % Gear Ratio
+        % Page 692, example 13-3
+        gear_ratio = rpm_out/rpm_in;
+        ratio_per_step = gear_ratio^(1/step);
+        fprintf("Question 1: \n")
+        fprintf("Reduction per step = %.2f or 2:1\n",ratio_per_step)
+    % N_p_theoretical (number of teeth on pinion)
+        % Page 678, Equation 13-11
+        m = 1/ratio_per_step; % gear teeth ration, per step 
+        k = .8; % 1 for full depth teeth, 0.8 for stub teeth
+        % need to use stub teeth
+        N_p_theory = ceil(((2*k)/((1+2*m)*sind(phi)^2))*(m+sqrt(m^2+(1+2*m)*sin(phi)^2)));
+    % N_g_theoretical (number of teeth on gear)
+        % Page 679, Equation 13-12
+        N_g_max = (N_p_theory^2 * sind(phi)^2 - 4*k^2)/(4*k - 2*N_p_theory*sind(phi)^2); 
+        % Find required mating gear for pinion 
+        N_g_theory = N_p_theory * (1/ratio_per_step);
+        
+% Choseing gears 
+    %6867K79 for pinion 1 and 3, 
+    %6325K9 for gear 2 and 4 
+    gear1.name = '6867K79';
+    gear1.pitch = 10;
+    gear1.pitch_diameter = 3;
+    gear1.face_width = 1;
+    gear1.teeth = 30;
+
+    gear2.name = '6325K9';
+    gear2.pitch = 10;
+    gear2.pitch_diameter = 6;
+    gear2.face_width = 1;
+    gear2.teeth = 60;
+        fprintf("Number of teeth on pinion 1 = %2.0f \n",gear1.teeth)
+        fprintf("Number of teeth on pinion 3 = %2.0f \n",gear1.teeth)
+        fprintf("Number of teeth on gear 2 = %2.0f \n",gear2.teeth)
+        fprintf("Number of teeth on gear 4 = %2.0f \n",gear2.teeth)
+% Quality Number
+% Diametral Pitch 
+    diameter_pinion = gear1.pitch_diameter; %N_p_theory ./ pitch;
+    diameter_gear = gear2.pitch_diameter; %N_g_theory ./ pitch;
+    % gears 1 and 3 are pinions, 2 and 4 are gears 
+    % 
+    diameter_1 = diameter_pinion;
+    diameter_2 = diameter_gear;
+    diameter_3 = diameter_pinion;
+    diameter_4 = diameter_gear; 
+% Face Width 
+    face_width = gear1.face_width; % from Mcmaster 
+% Pinion Material 
+    s_t_steel = 25000; %psi
+    s_t_brass = 10000; %psi, page 742, hardness 350
+    s_c_steel = 141000; %psi, change if you harden it 
+    s_c_brass = 40000; %psi
+% Gear Material 
+
+%% Solving Example 
+% Pinion Bending 
+    F = 1;% 4*pi/pitch; % face width theoretical 
+    
+%% Finding omega for each gear 
+rpm_2 = rpm_in*(N_p_theory/N_g_theory);
+rpm_3 = rpm_2; % on same shaft 
+fprintf("Question 4: \n")
+fprintf("Intermediate shaft rotational speed = %3.0f rpm \n",rpm_2)
+%% Finding Torque on each gear 
+torque_3 = torque_out*(rpm_out/rpm_3); %pound feet
+torque_2 = torque_3*(rpm_3/rpm_2);
+torque_in = torque_2*(rpm_2/rpm_in);
+fprintf("Torque on intermediate shaft = %f inch-Lbs \n",torque_2)
+
+%% w_t, transmitted tangental load, on each gear - page 697, 13-14 
+w_t_1 = 2*torque_in/diameter_1; %pounds 
+w_t_2 = 2*torque_2/diameter_2;
+w_t_3 = 2*torque_3/diameter_3;
+w_t_4 = 2*torque_out/diameter_4; 
+fprintf("Question 5: \n")
+fprintf("Transmitted tangental load on drive shaft = %f Lbs \n",w_t_4)
+%% w_r, transmitted radial load, on each gear - page 701, 13-15
+w_r_1 = w_t_1*tand(phi); %pounds 
+w_r_2 = w_t_2*tand(phi);
+w_r_3 = w_t_3*tand(phi);
+w_r_4 = w_t_4*tand(phi);
+% Use this for bending in shafts 
+fprintf("Transmitted radial load on drive shaft = %f Lbs \n",w_r_4)
+% if the actual radial load is less than what we used to calculate shaft
+% diameter, then we should be good to use a previously designed shaft
+% diameter 
+fprintf("The forces are just barely greater than what was used for the \ncalculations to design the original shaft but the calculations should still be reran.\nPlugging in the numbers a shaft of 1.25 inches should still work.\n")
+%% Lewis form factors  - 730
+Y_1 = 0.318; % N = 30, used chart 14-2 on page 730
+Y_2 = 0.355; % N = 60, 
+Y_3 = 0.318; % N = 30,
+Y_4 = 0.355; % N = 60,
+
+%% K_v for machined gears - 731
+v_1 = (diameter_1/12)*pi*rpm_in;
+K_v_1 = (1200+v_1)/1200; 
+
+v_2 = (diameter_2/12)*pi*rpm_2;
+K_v_2 = (1200+v_2)/1200; 
+
+v_3 = (diameter_3/12)*pi*rpm_3;
+K_v_3 = (1200+v_3)/1200;
+
+v_4 = (diameter_4/12)*pi*rpm_out;
+K_v_4 = (1200+v_4)/1200; 
+
+%% Bending stress in tooth
+% from figure 14-6, page 745
+J_1 = 0.385;
+J_2 = 0.425;
+J_3 = 0.385;
+J_4 = 0.425;
+% from page 752 
+c_mc = 1; %uncrowned 
+c_pf_1 = 0.025;
+c_pf_2 = 0.025;
+c_pm = 1.1;
+c_ma = 0.127 + 0.0158*F;
+c_e = 1;
+k_m_1 = 1+c_mc*(c_pf_1*c_pm + c_ma*c_e);
+k_m_2 = 1+c_mc*(c_pf_2*c_pm + c_ma*c_e);
+k_b = 1;
+k_o = 1.25;
+k_s = 1;
+sigma_1 = K_v_1*w_t_1*k_s*k_o*((pitch/F)*k_m_1*k_b/J_1);
+sigma_2 = K_v_2*w_t_2*k_s*k_o*((pitch/F)*k_m_2*k_b/J_2);
+sigma_3 = K_v_3*w_t_3*k_s*k_o*(pitch*k_m_1*k_b/(J_3*F));
+sigma_4 = K_v_4*w_t_4*k_s*k_o*(pitch*k_m_2*k_b/(J_4*F));
+% compare these to s_t, yeild in tention 
+
+%% Calculating safety factor, must be more than 1.5 
+load_cycles = rpm_out*life_minutes;
+y_n = .9;
+k_t = 1;
+k_r = 1.25;
+safety_factor_theoretical = (s_t_steel * y_n/(k_t*k_r))/sigma_4 ;
+% if this is greater than 1.5 we are good. 
+if (safety_factor_theoretical > 1.5)
+    fprintf("Passes bending \n")
+else
+    fprintf("Fails bending \n")
+end
+
+%% Finding minimum gear face width
+
+sigma_theoretical = (s_t_steel*y_n/(k_t*k_r))/safety_factor;
+f_min_pinion = w_t_3*k_o*K_v_4*k_s*(pitch/sigma_theoretical)*((k_m_1*k_b)/J_3);
+f_min_gear = w_t_4*k_o*K_v_4*k_s*(pitch/sigma_theoretical)*((k_m_2*k_b)/J_4);
+fprintf("Question 6: \n")
+fprintf("Bending Stress: %f \n",sigma_4)
+fprintf("Material Properties: \n")
+fprintf("sigma_theoretical: %f \n",sigma_theoretical)
+fprintf("S_c steel: %f \n",s_t_steel)
+fprintf("Smallest face for gear 3 = %f \n",f_min_pinion)
+fprintf("Smallest face for gear 4 = %f \n",f_min_gear)
+%% Finding Sigma c 
+c_f = 1;
+I = (cosd(phi)*sind(phi)/2)*(ratio_per_step)/(ratio_per_step+1);
+%cp find on page 736 and 749
+c_p = ((pi*(((1-.3^2)/(28*10^6))+((1-.3^2)/(28*10^6)))))^(-1/2);
+sigma_c_1 = c_p*(w_t_1*k_o*K_v_1*k_s*k_m_1*c_f/(diameter_1*F*I))^(1/2);
+sigma_c_2 = c_p*(w_t_1*k_o*K_v_1*k_s*k_m_1*c_f/(diameter_2*F*I))^(1/2);
+sigma_c_3 = c_p*(w_t_3*k_o*K_v_3*k_s*k_m_1*c_f/(diameter_3*F*I))^(1/2);
+sigma_c_4 = c_p*(w_t_4*k_o*K_v_4*k_s*k_m_2*c_f/(diameter_4*F*I))^(1/2);
+
+fprintf("Contact Stress: %f \n",sigma_c_4)
+%% Finding wear factor of safety
+z_n = 0.9; % page 755
+c_h = 1; %page 753, same material, same hardness
+s_h = (s_c_steel*z_n*c_h/(k_t*k_r))/(sigma_c_3); % use 3 because it is biger 
+% if greater than 1.5 we are good 
+if (s_h > 1.5)
+    fprintf("Passes wear \n")
+else
+    fprintf("Fails wear \n")
+end
+
+%% Finding minimum gear face width wear 
+sigma_c_theoretical = s_c_steel*z_n*c_h/(k_t*k_r)/sqrt(safety_factor);
+f_pinion_theoretical = c_p^2*(w_t_3*k_o*K_v_3*k_s*k_m_1*c_f/(diameter_3*sigma_c_theoretical^2*I));
+f_gear_theoretical = c_p^2*(w_t_4*k_o*K_v_4*k_s*k_m_2*c_f/(diameter_4*sigma_c_theoretical^2*I));
+fprintf("Smallest face for gear 3 = %f \n",f_pinion_theoretical)
+fprintf("Smallest face for gear 4 = %f \n",f_gear_theoretical)
+%% Estimating Horse power rating page 732, 14-2 
+
+%% Gears
+% Helpful example at 760, 14-4 and till 14-8
+% 14-19 goes over how to design a gear set 
+
+fprintf("Question 7: \n")
+fprintf("Pinion number %s \n",gear1.name)
+fprintf("Gear number %s \n",gear2.name)
+fprintf("Question 8: \n")
+fprintf("The gears would need to be hardened to a brinell hardness of about 400 to work for my calculations.\n")
+##### SOURCE END #####
+--></body></html>
